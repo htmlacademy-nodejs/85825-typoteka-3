@@ -1,7 +1,7 @@
 # Личный проект «Типотека» [![Build status][travis-image]][travis-url]
 
 * Студент: [Максим Спесивых](https://up.htmlacademy.ru/nodejs/3/user/85825).
-* Наставник: `Неизвестно`.
+* Наставник: [Алексей Пушников](https://up.htmlacademy.ru/nodejs/3/user/476723).
 
 ---
 
