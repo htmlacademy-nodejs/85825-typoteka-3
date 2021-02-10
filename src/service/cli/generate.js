@@ -61,6 +61,11 @@ module.exports = {
 		const [count] = args;
 		const countOffer = Number.parseInt(count, 10) || DEFAULT_COUNT;
 
+		if (countOffer < 0) {
+			console.error('Указано отрицательное число');
+			process.exit(ExitCode.uncaughtFatalException);
+		}
+
 		if (countOffer > MAX_COUNT) {
 			console.error('Не больше 1000 объявлений');
 			process.exit(ExitCode.uncaughtFatalException);
@@ -70,9 +75,11 @@ module.exports = {
 
 		fs.writeFile(FILE_NAME_OUTPUT, content, 'utf8', (err) => {
 		if (err) {
-			return console.error(`Can't write data to file...`);
+			console.error(`Can't write data to file...`);
+			process.exit(ExitCode.uncaughtFatalException);
 		}
-			return console.info('Operation success. File created.');
+			console.info('Operation success. File created.');
+			process.exit(ExitCode.success);
 		});
 	}
 };
