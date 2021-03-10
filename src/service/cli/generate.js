@@ -1,7 +1,8 @@
 'use strict';
 
-const fs = require('fs');
+const fs = require('fs').promises;
 const path = require('path');
+const chalk = require(`chalk`);
 
 const {
   getRandomInt,
@@ -55,6 +56,18 @@ const generateOffers = (count) => (
   })
 );
 
+const writeFile = async (content) => {
+	try {
+		await fs.writeFile(FILE_NAME_OUTPUT, content, 'utf8');
+		console.info(chalk.green('Operation success. File created.'));
+		process.exit(ExitCode.success);
+	}
+	catch (e) {
+		console.error(chalk.red(`Can't write data to file...`));
+		process.exit(ExitCode.uncaughtFatalException);
+	}
+}
+
 module.exports = {
 	name: '--generate',
 	run(args) {
@@ -62,24 +75,18 @@ module.exports = {
 		const countOffer = Number.parseInt(count, 10) || DEFAULT_COUNT;
 
 		if (countOffer < 0) {
-			console.error('Указано отрицательное число');
+			console.error(chalk.red('Указано отрицательное число'));
 			process.exit(ExitCode.uncaughtFatalException);
 		}
 
 		if (countOffer > MAX_COUNT) {
-			console.error('Не больше 1000 объявлений');
+			console.error(chalk.red('Не больше 1000 объявлений'));
 			process.exit(ExitCode.uncaughtFatalException);
 		}
 
 		const content = JSON.stringify(generateOffers(countOffer), null, 4);
-
-		fs.writeFile(FILE_NAME_OUTPUT, content, 'utf8', (err) => {
-		if (err) {
-			console.error(`Can't write data to file...`);
-			process.exit(ExitCode.uncaughtFatalException);
-		}
-			console.info('Operation success. File created.');
-			process.exit(ExitCode.success);
-		});
+		
+		writeFile(content);
+		
 	}
 };
