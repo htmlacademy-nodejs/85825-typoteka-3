@@ -1,4 +1,8 @@
 'use strict';
+const path = require('path');
+const util = require('util');
+const fs = require('fs');
+const { TEXT_FILE_PATH } = require('./service/cli/constants');
 
 module.exports.getRandomInt = (min, max) => {
   min = Math.ceil(min);
@@ -13,4 +17,10 @@ module.exports.shuffle = (someArray) => {
   }
 
   return someArray;
+};
+
+module.exports.getTextArr = async (filename) => {
+	const readFile = util.promisify(fs.readFile)
+	const dataText = await readFile(path.join(__dirname, '..', TEXT_FILE_PATH, filename), 'utf8');
+	return dataText ? dataText.split("\n") : [];
 };

@@ -7,15 +7,13 @@ const chalk = require(`chalk`);
 const {
   getRandomInt,
   shuffle,
+  getTextArr
 } = require('../../utils');
 
 const {
   DEFAULT_COUNT,
   MAX_COUNT,
-  TITLES,
-  SENTENCES,
   ANNOUNCE_LENGTH,
-  CATEGORIES,
   MONTH_RESTRICT,
   FILE_NAME
 } = require('./constants');
@@ -41,20 +39,23 @@ const formatDate = (date) => {
 	return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`
 }
 
-const generateOffers = (count) => (
-  Array(count).fill({}).map(() => {
-    const title = TITLES[getRandomInt(0, TITLES.length - 1)];
-    const announce = shuffle(SENTENCES).slice(1, ANNOUNCE_LENGTH).join(` `);
-    const fullText = shuffle(SENTENCES).slice(1, getRandomInt(1, SENTENCES.length - 1)).join(` `);
-    const category = shuffle(CATEGORIES).slice(0, getRandomInt(1, CATEGORIES.length - 1));
+const generateOffers = async(count) => {
+	const titles = await getTextArr('titles.txt');
+	const sentences = await getTextArr('sentences.txt');
+	const categories = await getTextArr('categories.txt');
+	return Array(count).fill({}).map(() => {
+		const title = titles[getRandomInt(0, titles.length - 1)];
+		const announce = shuffle(sentences).slice(1, ANNOUNCE_LENGTH).join(` `);
+		const fullText = shuffle(sentences).slice(1, getRandomInt(1, sentences.length - 1)).join(` `);
+		const category = shuffle(categories).slice(0, getRandomInt(1, categories.length - 1));
 
-    const today = new Date();
-    const startDate = new Date(new Date().setMonth(today.getMonth() - MONTH_RESTRICT));
-    const createdDate = formatDate(getRandomDate(startDate, today));
+		const today = new Date();
+		const startDate = new Date(new Date().setMonth(today.getMonth() - MONTH_RESTRICT));
+		const createdDate = formatDate(getRandomDate(startDate, today));
 
-    return ({title, createdDate, announce, fullText, category});
-  })
-);
+		return ({title, createdDate, announce, fullText, category});
+	})
+};
 
 const writeFile = async (content) => {
 	try {
@@ -70,7 +71,7 @@ const writeFile = async (content) => {
 
 module.exports = {
 	name: '--generate',
-	run(args) {
+	run: async(args) => {
 		const [count] = args;
 		const countOffer = Number.parseInt(count, 10) || DEFAULT_COUNT;
 
@@ -83,8 +84,8 @@ module.exports = {
 			console.error(chalk.red('Не больше 1000 объявлений'));
 			process.exit(ExitCode.uncaughtFatalException);
 		}
-
-		const content = JSON.stringify(generateOffers(countOffer), null, 4);
+		const offers = await generateOffers(countOffer);
+		const content = JSON.stringify(offers, null, 4);
 		
 		writeFile(content);
 		
