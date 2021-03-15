@@ -26,7 +26,7 @@ module.exports.getTextArr = async (filename) => {
 		return dataText ? dataText.split("\n") : [];
 	}
 	catch (e) {
-		console.error(chalk.red(`Ошибка чтения файла`));
+		console.error(chalk.red(`Ошибка чтения файла ${filename}`));
 		process.exit(ExitCode.uncaughtFatalException);
 	}
 };
