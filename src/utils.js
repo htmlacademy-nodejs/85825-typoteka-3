@@ -1,8 +1,9 @@
 'use strict';
 const path = require('path');
-const util = require('util');
-const fs = require('fs');
+const fs = require('fs').promises;
+const chalk = require(`chalk`);
 const { TEXT_FILE_PATH } = require('./service/cli/constants');
+const {ExitCode} = require('./service/constants');
 
 module.exports.getRandomInt = (min, max) => {
   min = Math.ceil(min);
@@ -20,7 +21,12 @@ module.exports.shuffle = (someArray) => {
 };
 
 module.exports.getTextArr = async (filename) => {
-	const readFile = util.promisify(fs.readFile)
-	const dataText = await readFile(path.join(__dirname, '..', TEXT_FILE_PATH, filename), 'utf8');
-	return dataText ? dataText.split("\n") : [];
+	try {
+		const dataText = await fs.readFile(path.join(__dirname, '..', TEXT_FILE_PATH, filename), 'utf8');
+		return dataText ? dataText.split("\n") : [];
+	}
+	catch (e) {
+		console.error(chalk.red(`Ошибка чтения файла`));
+		process.exit(ExitCode.uncaughtFatalException);
+	}
 };
