@@ -1,8 +1,7 @@
 'use strict';
 
-const chalk = require(`chalk`);
-const http = require(`http`);
 const fs = require(`fs`).promises;
+const express = require(`express`);
 
 const {
   FILE_NAME,
@@ -10,58 +9,27 @@ const {
 } = require('./constants');
 const {HttpCode} = require('../constants');
 
-const onClientConnect = async (req, res) => {
-  const notFoundMessageText = `Not found`;
-
-  switch (req.url) {
-    case `/`:
-      try {
-        const fileContent = await fs.readFile(FILE_NAME);
-        const mocks = JSON.parse(fileContent);
-        const message = mocks.map((post) => `<li>${post.title}</li>`).join(``);
-        sendResponse(res, HttpCode.OK, `<ul>${message}</ul>`);
-      } catch (err) {
-        sendResponse(res, HttpCode.NOT_FOUND, notFoundMessageText);
-      }
-
-      break;
-    default:
-      sendResponse(res, HttpCode.NOT_FOUND, notFoundMessageText);
-      break;
-  }
-};
-
-const sendResponse = (res, statusCode, message) => {
-  const template = `
-    <!Doctype html>
-      <html lang="ru">
-      <head>
-        <title>Сервер на node js</title>
-      </head>
-      <body>${message}</body>
-    </html>`.trim();
-
-  res.statusCode = statusCode;
-  res.writeHead(statusCode, {
-    'Content-Type': `text/html; charset=UTF-8`,
-  });
-
-  res.end(template);
-};
 
 module.exports = {
   name: `--server`,
   run(args) {
-  	const [customPort] = args;
-	const port = Number.parseInt(customPort, 10) || DEFAULT_PORT;
-	http.createServer(onClientConnect)
-    .listen(port)
-    .on(`listening`, (err) => {
-      if (err) {
-        return console.error(`Ошибка при создании сервера`, err);
+    const [customPort] = args;
+    const port = Number.parseInt(customPort, 10) || DEFAULT_PORT;
+    const app = express();
+    app.use(express.json());
+    app.get(`/posts`, async (req, res) => {
+      try {
+        const fileContent = await fs.readFile(FILE_NAME);
+        const mocks = JSON.parse(fileContent);
+        res.json(mocks);
+      } catch (err) {
+        res.json([]);
       }
-
-      return console.info(chalk.green(`Сервер запущен на ${port} порту`));
     });
+
+    app.use((req, res) => res
+      .status(HttpCode.NOT_FOUND)
+      .send(`Not found`));
+    app.listen(port);
   }
 };
