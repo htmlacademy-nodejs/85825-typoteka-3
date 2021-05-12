@@ -2,6 +2,7 @@
 
 const DEFAULT_COUNT = 1;
 const MAX_COUNT = 1000;
+const MAX_COMMENTS = 4;
 const ANNOUNCE_LENGTH = 5;
 const MONTH_RESTRICT = 3;
 const FILE_NAME = 'mocks.json';
@@ -15,5 +16,6 @@ module.exports = {
   MONTH_RESTRICT,
   FILE_NAME,
   TEXT_FILE_PATH,
-  DEFAULT_PORT
+  DEFAULT_PORT,
+  MAX_COMMENTS
 };
