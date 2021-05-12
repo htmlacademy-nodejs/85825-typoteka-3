@@ -3,6 +3,8 @@
 const DEFAULT_COMMAND = `--help`;
 
 const USER_ARGV_INDEX = 2;
+const MAX_ID_LENGTH = 6;
+const API_PREFIX = `/api`;
 
 const ExitCode = {
   success: 0,
@@ -16,11 +18,14 @@ const HttpCode = {
   INTERNAL_SERVER_ERROR: 500,
   FORBIDDEN: 403,
   UNAUTHORIZED: 401,
+  BAD_REQUEST: 400,
 };
 
 module.exports = {
   DEFAULT_COMMAND,
   USER_ARGV_INDEX,
   ExitCode,
-  HttpCode
+  HttpCode,
+  MAX_ID_LENGTH,
+  API_PREFIX
 };
