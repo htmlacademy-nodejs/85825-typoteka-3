@@ -2,6 +2,8 @@
 
 const {Router} = require(`express`);
 const {HttpCode} = require(`../constants`);
+const {getLogger} = require(`../lib/logger`);
+const logger = getLogger({name: `api`});
 
 const route = new Router();
 
@@ -12,6 +14,7 @@ module.exports = (app, service) => {
     const {query = ``} = req.query;
 
     if (!query) {
+      logger.error(`Bad request`);
       res.status(HttpCode.BAD_REQUEST).json([]);
       return;
     }
