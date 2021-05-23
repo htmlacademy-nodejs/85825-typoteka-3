@@ -1,6 +1,8 @@
 'use strict';
 
 const {HttpCode} = require(`../constants`);
+const {getLogger} = require(`../lib/logger`);
+const logger = getLogger({name: `api`});
 
 const articleKeys = [`category`, `announce`, `fullText`, `createdDate`, `title`];
 
@@ -10,9 +12,10 @@ module.exports = (req, res, next) => {
   const keysExists = articleKeys.every((key) => keys.includes(key));
 
   if (!keysExists) {
-    res.status(HttpCode.BAD_REQUEST)
+    logger.error(`Bad request`);
+    return res.status(HttpCode.BAD_REQUEST)
       .send(`Bad request`);
   }
 
-  next();
+  return next();
 };

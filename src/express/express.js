@@ -26,7 +26,7 @@ app.use((req, res) => {
 });
 
 app.use((err, req, res) => {
-  console.log('==err==', err);
+  console.log(`==err==`, err);
   res.status(500).render(`errors/500`);
 });
 

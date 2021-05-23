@@ -3,6 +3,8 @@
 const {Router} = require(`express`);
 const {HttpCode} = require(`../constants`);
 const articleValidator = require(`../middlewares/article-validator`);
+const {getLogger} = require(`../lib/logger`);
+const logger = getLogger({name: `api`});
 
 const route = new Router();
 
@@ -19,6 +21,7 @@ module.exports = (app, articleService) => {
     const article = articleService.findOne(articleId);
 
     if (!article) {
+      logger.error(`Not found with ${articleId}`);
       return res.status(HttpCode.NOT_FOUND)
         .send(`Not found with ${articleId}`);
     }
@@ -39,6 +42,7 @@ module.exports = (app, articleService) => {
     const existsArticle = articleService.findOne(articleId);
 
     if (!existsArticle) {
+      logger.error(`Not found with ${articleId}`);
       return res.status(HttpCode.NOT_FOUND)
         .send(`Not found with ${articleId}`);
     }
@@ -54,6 +58,7 @@ module.exports = (app, articleService) => {
     const article = articleService.drop(articleId);
 
     if (!article) {
+      logger.error(`Not found`);
       return res.status(HttpCode.NOT_FOUND)
         .send(`Not found`);
     }

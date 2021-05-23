@@ -4,6 +4,8 @@ const {Router} = require(`express`);
 const {HttpCode} = require(`../constants`);
 const articleExist = require(`../middlewares/article-exists`);
 const commentValidator = require(`../middlewares/comment-validator`);
+const {getLogger} = require(`../lib/logger`);
+const logger = getLogger({name: `api`});
 
 const route = new Router();
 
@@ -25,6 +27,7 @@ module.exports = (app, articleService, commentService) => {
     const deletedComment = commentService.drop(article, commentId);
 
     if (!deletedComment) {
+      logger.error(`Not found`);
       return res.status(HttpCode.NOT_FOUND)
         .send(`Not found`);
     }
