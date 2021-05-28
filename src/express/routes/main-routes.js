@@ -5,25 +5,25 @@ const mainRouter = new Router();
 const {getAPI} = require(`../api`);
 const api = getAPI();
 
-mainRouter.get(`/`, async (req, res) => {
+mainRouter.get(`/`, async (req, res, next) => {
   let articles = [];
   try {
     articles = await api.getArticles();
   } catch (e) {
-    throw e;
+    next(e);
   }
   res.render(`main`, {articles});
 });
 mainRouter.get(`/register`, (req, res) => res.render(`sign-up`));
 mainRouter.get(`/login`, (req, res) => res.render(`login`));
-mainRouter.get(`/search`, async (req, res) => {
+mainRouter.get(`/search`, async (req, res, next) => {
   let result = [];
   if (req.query.search) {
     try {
       result = await api.search(req.query.search);
     } catch (e) {
       if (e.response.status !== 404) {
-        throw e;
+        next(e);
       }
     }
   }

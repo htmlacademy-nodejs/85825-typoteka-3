@@ -6,12 +6,12 @@ const {getAPI} = require(`../api`);
 const api = getAPI();
 
 articlesRouter.get(`/category/:id`, (req, res) => res.render(`articles-by-category`));
-articlesRouter.get(`/add`, async (req, res) => {
+articlesRouter.get(`/add`, async (req, res, next) => {
   try {
     const categories = await api.getCategories();
     res.render(`new-post`, {user: true, categories});
   } catch (e) {
-    throw e;
+    next(e);
   }
 });
 articlesRouter.post(`/add`, async (req, res) => {
@@ -19,6 +19,7 @@ articlesRouter.post(`/add`, async (req, res) => {
     await api.createArticle(req.body);
     res.redirect(`/my`);
   } catch (e) {
+    console.log(e);
     res.redirect(`back`);
   }
 });
@@ -32,7 +33,7 @@ articlesRouter.get(`/edit/:id`, async (req, res, next) => {
       api.getCategories()
     ]);
   } catch (e) {
-    next();
+    next(e);
   }
   res.render(`edit-post`, {user: true, article, categories});
 });
