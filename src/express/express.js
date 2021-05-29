@@ -2,6 +2,7 @@
 
 const express = require(`express`);
 const path = require(`path`);
+const bodyParser = require(`body-parser`);
 
 const articlesRoutes = require(`./routes/articles-routes`);
 const myRoutes = require(`./routes/my-routes`);
@@ -14,7 +15,8 @@ const app = express();
 
 app.set(`views`, path.resolve(__dirname, `templates`));
 app.set(`view engine`, `pug`);
-
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static(path.resolve(__dirname, PUBLIC_DIR)));
 
 app.use(`/articles`, articlesRoutes);
@@ -26,7 +28,6 @@ app.use((req, res) => {
 });
 
 app.use((err, req, res) => {
-  console.log(`==err==`, err);
   res.status(500).render(`errors/500`);
 });
 
