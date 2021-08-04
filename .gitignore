@@ -16,3 +16,6 @@ build/
 
 mocks.json
 ./service/logs
+
+# Файл с переменными окружения
+.env
