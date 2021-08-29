@@ -1,13 +1,18 @@
 extends layout.pug
 
 block content
+  -
+    const formatDate = (dateString) => {
+      const date = new Date(dateString);
+      return date.toLocaleString();
+    }
   main.main-page.main-page--padding
     section.main-page__notes.notes
       h1.notes__title Мои записи
       ul.notes__list
         each article in articles
           li.notes__list-item
-            time.notes__item-time(datetime=article.createdDate) #{article.createdDate}
+            time.notes__item-time(datetime=article.createdAt) #{formatDate(article.createdAt)}
             a.notes__item-text(href='/articles/' + article.id) #{article.title}
             button.notes__button.button.button--close-item(type='button')
               span.visually-hidden Закрыть строку списка

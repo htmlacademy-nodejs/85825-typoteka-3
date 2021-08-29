@@ -7,12 +7,14 @@ const api = getAPI();
 
 mainRouter.get(`/`, async (req, res, next) => {
   let articles = [];
+  let categories = [];
   try {
-    articles = await api.getArticles();
+    articles = await api.getArticles({comments: true});
+    categories = await api.getCategories(true);
   } catch (e) {
     next(e);
   }
-  res.render(`main`, {articles});
+  res.render(`main`, {articles, categories});
 });
 mainRouter.get(`/register`, (req, res) => res.render(`sign-up`));
 mainRouter.get(`/login`, (req, res) => res.render(`login`));
@@ -33,6 +35,9 @@ mainRouter.get(`/search`, async (req, res, next) => {
     result
   });
 });
-mainRouter.get(`/categories`, (req, res) => res.render(`all-categories`));
+mainRouter.get(`/categories`, async (req, res) => {
+  const categories = await api.getCategories();
+  res.render(`all-categories`, {categories});
+});
 
 module.exports = mainRouter;

@@ -17,7 +17,7 @@ myRouter.get(`/`, async (req, res, next) => {
 myRouter.get(`/comments`, async (req, res, next) => {
   let articles = [];
   try {
-    articles = await api.getArticles();
+    articles = await api.getArticles({comments: true});
   } catch (e) {
     next(e);
   }

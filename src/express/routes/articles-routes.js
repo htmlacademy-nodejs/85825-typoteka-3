@@ -5,7 +5,12 @@ const articlesRouter = new Router();
 const {getAPI} = require(`../api`);
 const api = getAPI();
 
-articlesRouter.get(`/category/:id`, (req, res) => res.render(`articles-by-category`));
+articlesRouter.get(`/category/:id`, async (req, res) => {
+  const {id} = req.params;
+  const category = await api.getCategory(id);
+  const categories = await api.getCategories(true);
+  res.render(`articles-by-category`, {category, categories});
+});
 articlesRouter.get(`/add`, async (req, res, next) => {
   try {
     const categories = await api.getCategories();
@@ -15,14 +20,36 @@ articlesRouter.get(`/add`, async (req, res, next) => {
   }
 });
 articlesRouter.post(`/add`, async (req, res) => {
+  const {body} = req;
   try {
-    await api.createArticle(req.body);
+    const offerData = {
+      ...body,
+      categories: body.category
+    };
+    await api.createArticle(offerData);
     res.redirect(`/my`);
   } catch (e) {
     console.log(e);
     res.redirect(`back`);
   }
 });
+
+articlesRouter.post(`/edit/:id`, async (req, res) => {
+  const {id} = req.params;
+  const {body} = req;
+  try {
+    const offerData = {
+      ...body,
+      categories: body.category
+    };
+    await api.updateArticle(offerData, id);
+    res.redirect(`/my`);
+  } catch (e) {
+    console.log(e);
+    res.redirect(`back`);
+  }
+});
+
 articlesRouter.get(`/edit/:id`, async (req, res, next) => {
   const {id} = req.params;
   let article;
@@ -37,6 +64,11 @@ articlesRouter.get(`/edit/:id`, async (req, res, next) => {
   }
   res.render(`edit-post`, {user: true, article, categories});
 });
-articlesRouter.get(`/:id`, (req, res) => res.render(`post`, {user: true}));
+articlesRouter.get(`/:id`, async (req, res) => {
+  const {id} = req.params;
+  const article = await api.getArticle(id, true);
+  res.render(`post`, {article});
+}
+);
 
 module.exports = articlesRouter;

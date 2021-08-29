@@ -1,6 +1,11 @@
 extends layout.pug
 
 block content
+  -
+    const formatDate = (dateString) => {
+      const date = new Date(dateString);
+      return date.toLocaleString();
+    }
   main
     section.search-page
       div(class=`search-page__wrapper${(!result.length && searchQuery) ? ' search-page__wrapper--empty' : ''}`)
@@ -12,8 +17,8 @@ block content
             button.search__button.button.button--transparent(type='submit') Найти
           each article in result
             .search__result
-              time.search__date(datetime=article.createdDate) #{article.createdDate}
-              a.search__link #{article.title}
+              time.search__date(datetime=article.createdAt) #{formatDate(article.createdAt)}
+              a.search__link(href=`/articles/${article.id}`) #{article.title}
         if (!result.length && searchQuery)
           p.search-page__empty Ничего не нашлось
 

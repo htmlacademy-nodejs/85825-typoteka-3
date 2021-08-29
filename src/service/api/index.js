@@ -1,38 +1,26 @@
 'use strict';
 
 const {Router} = require(`express`);
-const category = require(`../api/category`);
-const article = require(`../api/article`);
-const search = require(`../api/search`);
-const comment = require(`../api/comment`);
-const {ExitCode} = require(`../constants`);
+const category = require(`./category`);
+const article = require(`./article`);
+const search = require(`./search`);
 
-const getMockData = require(`../lib/get-mock-data`);
-const {getLogger} = require(`../lib/logger`);
-const logger = getLogger({name: `api`});
+const CategoryService = require(`../data-service/category`);
+const SearchService = require(`../data-service/search`);
+const ArticleService = require(`../data-service/article`);
+const CommentService = require(`../data-service/comment`);
 
-const {
-  CategoryService,
-  SearchService,
-  ArticleService,
-  CommentService,
-} = require(`../data-service`);
+const sequelize = require(`../lib/sequelize`);
+const defineModels = require(`../models`);
 
 const app = new Router();
 
-(async () => {
-  let mockData;
-  try {
-    mockData = await getMockData();
-  } catch (e) {
-    logger.error(`Can't write data to file...`);
-    process.exit(ExitCode.uncaughtFatalException);
-  }
+defineModels(sequelize);
 
-  category(app, new CategoryService(mockData));
-  search(app, new SearchService(mockData));
-  article(app, new ArticleService(mockData));
-  comment(app, new ArticleService(mockData), new CommentService());
+(() => {
+  category(app, new CategoryService(sequelize));
+  search(app, new SearchService(sequelize));
+  article(app, new ArticleService(sequelize), new CommentService(sequelize));
 })();
 
 module.exports = app;
