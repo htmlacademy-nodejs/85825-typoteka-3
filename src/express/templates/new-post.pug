@@ -1,6 +1,11 @@
 extends layout.pug
 
 block content
+  -
+    const formatDate = () => {
+      const date = new Date();
+      return date.toLocaleString();
+    }
   main
     section
       .popup.popup--new-publication.popup--anti
@@ -13,7 +18,7 @@ block content
                 .new-publication__date-form-division
                   .new-publication__date-block
                     label(for='new-publication-date' aria-label='Календарь')
-                    input#new-publication-date(type='text' name='createdDate' placeholder='2021-03-21')
+                    input#new-publication-date(type='text' name='createdDate' placeholder='2021-08-28')
               button.new-publication__button.button.button--colored(type='submit') Опубликовать
             a.popup__button.button.button--popup-close(href='javascript:history.back()' aria-label='Закрыть окно')
               | Закрыть
@@ -34,8 +39,8 @@ block content
                 .new-publication__category-wrapper
                   each category,index in categories
                     .new-publication__checkbox.new-publication__checkbox--auto
-                      input(type='checkbox' name='category[]' value=category id='checkbox-auto-' + index)
-                      label(for='checkbox-auto-' + index) #{category}
+                      input(type='checkbox' name='category[]' value=category.id id='checkbox-auto-' + index)
+                      label(for='checkbox-auto-' + index) #{category.name}
                   a.new-publication__form-link.button.button--transparent(href='#') Добавить категорию
               .form__wrapper.form__wrapper--text
                 .form__field.form__field--publication-text
