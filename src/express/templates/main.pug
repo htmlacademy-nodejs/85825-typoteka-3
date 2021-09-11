@@ -91,7 +91,8 @@ block content
               span.preview__cloud
               b.preview__comment-count #{article.comments.length}
     .preview__toggle-wrapper
-      ul.preview__pagination.pagination
+      +pagination(page, totalPages, 2, `?`)
+
         li
           a.pagination__button.button.button--backwards.button--disabled(href='#' aria-label='Страница назад') Назад
         li.pagination__item.pagination__item--active

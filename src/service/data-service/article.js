@@ -30,6 +30,19 @@ class ArticleService {
     return this._Article.findByPk(id, {include});
   }
 
+  async findPage({limit, offset}) {
+    const {count, rows} = await this._Article.findAndCountAll({
+      limit,
+      offset,
+      include: [Aliase.CATEGORIES, Aliase.COMMENTS],
+      order: [
+        [`createdAt`, `DESC`]
+      ],
+      distinct: true
+    });
+    return {count, articles: rows};
+  }
+
   async findAll(needComments) {
     const include = [Aliase.CATEGORIES];
     if (needComments) {
