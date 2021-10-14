@@ -29,3 +29,7 @@ module.exports.getTextArr = async (filename) => {
     return process.exit(ExitCode.uncaughtFatalException);
   }
 };
+
+module.exports.prepareErrors = (errors) => {
+  return errors.response.data.split(`\n`);
+};

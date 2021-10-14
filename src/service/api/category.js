@@ -2,6 +2,7 @@
 
 const {Router} = require(`express`);
 const {HttpCode} = require(`../constants`);
+const RouteParamsValidator = require(`../middlewares/route-params-validator`);
 const {getLogger} = require(`../lib/logger`);
 const logger = getLogger({name: `api`});
 
@@ -17,7 +18,7 @@ module.exports = (app, service) => {
       .json(categories);
   });
 
-  route.get(`/:categoryId`, async (req, res) => {
+  route.get(`/:categoryId`, RouteParamsValidator, async (req, res) => {
     const {categoryId} = req.params;
     const category = await service.findOne(categoryId);
 
