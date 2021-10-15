@@ -8,7 +8,7 @@ const api = getAPI();
 myRouter.get(`/`, async (req, res, next) => {
   let articles = [];
   try {
-    articles = await api.getArticles();
+    articles = await api.getArticles({});
   } catch (e) {
     next(e);
   }

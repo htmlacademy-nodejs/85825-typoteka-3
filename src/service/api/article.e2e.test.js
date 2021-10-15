@@ -162,11 +162,13 @@ describe(`API returns a list of all articles`, () => {
 
 describe(`API creates an article if data is valid`, () => {
   const newArticle = {
-    title: `Валидный заголовок`,
-    announce: `Валидный анонс`,
-    category: `Железо`,
-    fullText: `Полный текст`,
-    categories: [1],
+    createdDate: `2020-10-21`,
+    title: `Обзор новейшего смартфона Обзор новейшего смартфона`,
+    photo: ``,
+    upload: ``,
+    announce: `Этот смартфон — настоящая находка. Большой и яркий экран, мощнейший процессор — всё это в небольшом гаджете.`,
+    fullText: `Простые ежедневные упражнения помогут достичь успеха. Программировать не настолько сложно, как об этом говорят. Ёлки — это не просто красивое дерево. Это прочная древесина.`,
+    categories: [`1`, `2`, `3`, `7`, `8`, `9`]
   };
 
   let app;
@@ -208,12 +210,13 @@ describe(`API refuses to create an article if data is invalid`, () => {
 
 describe(`API changes existent article`, () => {
   const newArticle = {
-    categories: [1, 4, 6, 7, 8],
-    title: `Валидный заголовок`,
-    announce: `Валидный анонс`,
-    createdDate: `2020-12-28T03:02:03.227Z`,
-    category: `Железо`,
-    fullText: `Полный текст`
+    createdDate: `2020-10-21`,
+    title: `Обзор новейшего смартфона Обзор новейшего смартфона`,
+    photo: ``,
+    upload: ``,
+    announce: `Этот смартфон — настоящая находка. Большой и яркий экран, мощнейший процессор — всё это в небольшом гаджете.`,
+    fullText: `Простые ежедневные упражнения помогут достичь успеха. Программировать не настолько сложно, как об этом говорят. Ёлки — это не просто красивое дерево. Это прочная древесина.`,
+    categories: [`1`, `2`, `3`, `7`, `8`, `9`]
   };
 
   let app;
@@ -230,7 +233,7 @@ describe(`API changes existent article`, () => {
 
   test(`Post is really changed`, () => request(app)
     .get(`/articles/2`)
-    .expect((res) => expect(res.body.title).toBe(`Валидный заголовок`))
+    .expect((res) => expect(res.body.title).toBe(`Обзор новейшего смартфона Обзор новейшего смартфона`))
   );
 });
 
@@ -238,11 +241,13 @@ test(`API returns status code 404 when trying to change non-existent article`, a
   const app = await createAPI();
 
   const validPost = {
-    categories: [3],
-    title: `Как собрать камни бесконечности.`,
-    announce: `Как собрать камни бесконечности.`,
-    fullText: `Полный текст`,
-    category: 1
+    createdDate: `2020-10-21`,
+    title: `Обзор новейшего смартфона Обзор новейшего смартфона`,
+    photo: ``,
+    upload: ``,
+    announce: `Этот смартфон — настоящая находка. Большой и яркий экран, мощнейший процессор — всё это в небольшом гаджете.`,
+    fullText: `Простые ежедневные упражнения помогут достичь успеха. Программировать не настолько сложно, как об этом говорят. Ёлки — это не просто красивое дерево. Это прочная древесина.`,
+    categories: [`1`, `2`, `3`, `7`, `8`, `9`]
   };
 
   return await request(app)
@@ -280,6 +285,29 @@ describe(`API correctly deletes an article`, () => {
 
 test(`API returns to delete non-existent article`, async () => {
   const app = await createAPI();
-  await request(app).delete(`/articles/noexists`).expect(HttpCode.NOT_FOUND);
+  await request(app).delete(`/articles/89`).expect(HttpCode.NOT_FOUND);
 });
+test(`When field value is wrong response code is 400`, async () => {
+  const newOffer = {
+    createdDate: `2020-10-21`,
+    title: `Обзор новейшего смартфона Обзор новейшего смартфона`,
+    photo: ``,
+    upload: ``,
+    announce: `Этот смартфон — настоящая находка. Большой и яркий экран, мощнейший процессор — всё это в небольшом гаджете.`,
+    fullText: `Простые ежедневные упражнения помогут достичь успеха. Программировать не настолько сложно, как об этом говорят. Ёлки — это не просто красивое дерево. Это прочная древесина.`,
+    categories: [`1`, `2`, `3`, `7`, `8`, `9`]
+  };
+  const app = await createAPI();
 
+  const badOffers = [
+    {...newOffer, announce: 1},
+    {...newOffer, title: `too short`},
+    {...newOffer, categories: []}
+  ];
+  for (const badOffer of badOffers) {
+    await request(app)
+      .post(`/articles`)
+      .send(badOffer)
+      .expect(HttpCode.BAD_REQUEST);
+  }
+});

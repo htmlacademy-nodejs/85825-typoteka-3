@@ -3,6 +3,7 @@
 const {Router} = require(`express`);
 const {HttpCode} = require(`../constants`);
 const articleValidator = require(`../middlewares/article-validator`);
+const RouteParamsValidator = require(`../middlewares/route-params-validator`);
 const {getLogger} = require(`../lib/logger`);
 const logger = getLogger({name: `api`});
 
@@ -22,7 +23,7 @@ module.exports = (app, articleService) => {
     res.status(HttpCode.OK).json(result);
   });
 
-  route.get(`/:articleId`, async (req, res) => {
+  route.get(`/:articleId`, RouteParamsValidator, async (req, res) => {
     const {articleId} = req.params;
     const {comments} = req.query;
     const article = await articleService.findOne(articleId, comments);
@@ -44,7 +45,7 @@ module.exports = (app, articleService) => {
       .json(article);
   });
 
-  route.put(`/:articleId`, articleValidator, async (req, res) => {
+  route.put(`/:articleId`, [RouteParamsValidator, articleValidator], async (req, res) => {
     const {articleId} = req.params;
     const existsArticle = await articleService.findOne(articleId);
 
@@ -60,7 +61,7 @@ module.exports = (app, articleService) => {
       .json(updatedArticle);
   });
 
-  route.delete(`/:articleId`, async (req, res) => {
+  route.delete(`/:articleId`, RouteParamsValidator, async (req, res) => {
     const {articleId} = req.params;
     const article = await articleService.drop(articleId);
 
