@@ -16,6 +16,8 @@ const ErrorOfferMessage = {
   REQUIRED_CATEGORIES: `Не выбраны категории`,
   REQUIRED_DESCRIPTION: `Не заполнен полный текст`,
   PICTURE: `Изображение не выбрано или тип изображения не поддерживается`,
+  USER_ID: `Некорректный идентификатор пользователя`,
+  REQUIRED_USER_ID: `Идентификатор пользователя обязателен`
 };
 
 const schema = Joi.object({
@@ -41,6 +43,10 @@ const schema = Joi.object({
   }),
   upload: Joi.string().allow(``),
   createdDate: Joi.string().allow(``),
+  userId: Joi.number().integer().positive().required().messages({
+    'number.base': ErrorOfferMessage.USER_ID,
+    'any.required': ErrorOfferMessage.REQUIRED_USER_ID
+  })
 });
 
 module.exports = (req, res, next) => {

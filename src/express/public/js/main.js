@@ -327,3 +327,18 @@ if (typeof window === 'undefined' || typeof window.getComputedStyle !== 'functio
 //     autosize(element);
 //   });
 // }
+
+// Вывод аватарки до загрузки
+const avatarRegistr = document.querySelector('.registredImg');
+const inputRegistr = document.querySelector('.registredAvatar');
+inputRegistr && inputRegistr.addEventListener('change', (e) => {
+  if (inputRegistr.files && inputRegistr.files[0]) {
+    const reader = new FileReader();
+
+    reader.onload = function (e) {
+      avatarRegistr.src = e.target.result;
+    };
+
+    reader.readAsDataURL(inputRegistr.files[0]);
+  }
+}, true);

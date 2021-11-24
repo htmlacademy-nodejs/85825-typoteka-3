@@ -5,8 +5,8 @@ const request = require(`supertest`);
 const Sequelize = require(`sequelize`);
 
 const initDB = require(`../lib/init-db`);
-const article = require(`./article`);
-const DataService = require(`../data-service/article`);
+const user = require(`./user`);
+const DataService = require(`../data-service/user`);
 const {HttpCode} = require(`../constants`);
 const passwordUtils = require(`../lib/password`);
 
@@ -175,181 +175,98 @@ const createAPI = async () => {
   await initDB(mockDB, {categories: mockCategories, offers: mockData, users});
   const app = express();
   app.use(express.json());
-  article(app, new DataService(mockDB));
+  user(app, new DataService(mockDB));
   return app;
 };
 
-describe(`API returns a list of all articles`, () => {
-
-  let response;
-
-  beforeAll(async () => {
-    const app = await createAPI();
-    response = await request(app)
-      .get(`/articles`);
-  });
-  test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
-
-  test(`Returns a list of 5 articles`, () => expect(response.body.length).toBe(5));
-
-  test(`First article's title equals "Как собрать камни бесконечности."`, () => expect(response.body[0].title).toBe(`Как собрать камни бесконечности`));
-
-});
-
-describe(`API creates an article if data is valid`, () => {
-  const newArticle = {
-    createdDate: `2020-10-21`,
-    title: `Обзор новейшего смартфона Обзор новейшего смартфона`,
-    photo: ``,
-    upload: ``,
-    announce: `Этот смартфон — настоящая находка. Большой и яркий экран, мощнейший процессор — всё это в небольшом гаджете.`,
-    fullText: `Простые ежедневные упражнения помогут достичь успеха. Программировать не настолько сложно, как об этом говорят. Ёлки — это не просто красивое дерево. Это прочная древесина.`,
-    categories: [`1`, `2`, `3`, `7`, `8`, `9`],
-    userId: 1
+describe(`API creates user if data is valid`, () => {
+  const validUserData = {
+    name: `Сидор`,
+    surname: `Сидоров`,
+    email: `sidorov@example.com`,
+    password: `sidorov`,
+    passwordRepeated: `sidorov`,
+    avatar: `sidorov.jpg`
   };
 
-  let app;
   let response;
 
   beforeAll(async () => {
-    app = await createAPI();
+    let app = await createAPI();
     response = await request(app)
-      .post(`/articles`)
-      .send(newArticle);
+      .post(`/user`)
+      .send(validUserData);
   });
 
   test(`Status code 201`, () => expect(response.statusCode).toBe(HttpCode.CREATED));
-
-  test(`Articles count is changed`, () => request(app)
-    .get(`/articles`)
-    .expect((res) => expect(res.body.length).toBe(6))
-  );
-
 });
 
-describe(`API refuses to create an article if data is invalid`, () => {
-  const newArticle = {
-    title: `Валидный заголовок`,
-    announce: `Валидный анонс`,
-    category: `Железо`,
-    fullText: `Полный текст`,
-    userId: 1
+describe(`API refuses to create user if data is invalid`, () => {
+  const validUserData = {
+    name: `Сидор`,
+    surname: `Сидоров`,
+    email: `sidorov@example.com`,
+    password: `sidorov`,
+    passwordRepeated: `sidorov`,
+    avatar: `sidorov.jpg`
   };
+
+  let app;
+
+  beforeAll(async () => {
+    app = await createAPI();
+  });
 
   test(`Without any required property response code is 400`, async () => {
-    for (const key of Object.keys(newArticle)) {
-      const badArticle = {...newArticle};
-      delete badArticle[key];
-      const app = await createAPI();
-      await request(app).post(`/articles`).send(badArticle).expect(HttpCode.BAD_REQUEST);
+    for (const key of Object.keys(validUserData)) {
+      const badUserData = {...validUserData};
+      delete badUserData[key];
+      await request(app)
+        .post(`/user`)
+        .send(badUserData)
+        .expect(HttpCode.BAD_REQUEST);
     }
   });
-});
 
-describe(`API changes existent article`, () => {
-  const newArticle = {
-    createdDate: `2020-10-21`,
-    title: `Обзор новейшего смартфона Обзор новейшего смартфона`,
-    photo: ``,
-    upload: ``,
-    announce: `Этот смартфон — настоящая находка. Большой и яркий экран, мощнейший процессор — всё это в небольшом гаджете.`,
-    fullText: `Простые ежедневные упражнения помогут достичь успеха. Программировать не настолько сложно, как об этом говорят. Ёлки — это не просто красивое дерево. Это прочная древесина.`,
-    categories: [`1`, `2`, `3`, `7`, `8`, `9`],
-    userId: 1
-  };
-
-  let app;
-  let response;
-
-  beforeAll(async () => {
-    app = await createAPI();
-    response = await request(app)
-      .put(`/articles/2`)
-      .send(newArticle);
+  test(`When field type is wrong response code is 400`, async () => {
+    const badUsers = [
+      {...validUserData, firstName: true},
+      {...validUserData, email: 1}
+    ];
+    for (const badUserData of badUsers) {
+      await request(app)
+        .post(`/user`)
+        .send(badUserData)
+        .expect(HttpCode.BAD_REQUEST);
+    }
   });
 
-  test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
-
-  test(`Post is really changed`, () => request(app)
-    .get(`/articles/2`)
-    .expect((res) => expect(res.body.title).toBe(`Обзор новейшего смартфона Обзор новейшего смартфона`))
-  );
-});
-
-test(`API returns status code 404 when trying to change non-existent article`, async () => {
-  const app = await createAPI();
-
-  const validPost = {
-    createdDate: `2020-10-21`,
-    title: `Обзор новейшего смартфона Обзор новейшего смартфона`,
-    photo: ``,
-    upload: ``,
-    announce: `Этот смартфон — настоящая находка. Большой и яркий экран, мощнейший процессор — всё это в небольшом гаджете.`,
-    fullText: `Простые ежедневные упражнения помогут достичь успеха. Программировать не настолько сложно, как об этом говорят. Ёлки — это не просто красивое дерево. Это прочная древесина.`,
-    categories: [`1`, `2`, `3`, `7`, `8`, `9`],
-    userId: 1
-  };
-
-  return await request(app)
-    .put(`/articles/20`)
-    .send(validPost)
-    .expect(HttpCode.NOT_FOUND);
-});
-
-test(`API returns status code 404 when trying to change an article with invalid data`, async () => {
-  const invalidArticle = {
-    title: `Валидный заголовок`,
-    category: `Железо`,
-    fullText: `Полный текст`,
-    userId: 1
-  };
-
-  const app = await createAPI();
-
-  await request(app).put(`/articles/1`).send(invalidArticle).expect(HttpCode.BAD_REQUEST);
-});
-
-describe(`API correctly deletes an article`, () => {
-  let app;
-  let response;
-
-  beforeAll(async () => {
-    app = await createAPI();
-    response = await request(app).delete(`/articles/1`);
+  test(`When field value is wrong response code is 400`, async () => {
+    const badUsers = [
+      {...validUserData, password: `short`, passwordRepeated: `short`},
+      {...validUserData, email: `invalid`}
+    ];
+    for (const badUserData of badUsers) {
+      await request(app)
+        .post(`/user`)
+        .send(badUserData)
+        .expect(HttpCode.BAD_REQUEST);
+    }
   });
 
-  test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
-  test(`Articles count is 4 now`, async () => {
-    await request(app).get(`/articles`).expect((res) => expect(res.body.length).toBe(4));
-  });
-});
-
-test(`API returns to delete non-existent article`, async () => {
-  const app = await createAPI();
-  await request(app).delete(`/articles/89`).expect(HttpCode.NOT_FOUND);
-});
-test(`When field value is wrong response code is 400`, async () => {
-  const newOffer = {
-    createdDate: `2020-10-21`,
-    title: `Обзор новейшего смартфона Обзор новейшего смартфона`,
-    photo: ``,
-    upload: ``,
-    announce: `Этот смартфон — настоящая находка. Большой и яркий экран, мощнейший процессор — всё это в небольшом гаджете.`,
-    fullText: `Простые ежедневные упражнения помогут достичь успеха. Программировать не настолько сложно, как об этом говорят. Ёлки — это не просто красивое дерево. Это прочная древесина.`,
-    categories: [`1`, `2`, `3`, `7`, `8`, `9`],
-    userId: 1
-  };
-  const app = await createAPI();
-
-  const badOffers = [
-    {...newOffer, announce: 1},
-    {...newOffer, title: `too short`},
-    {...newOffer, categories: []}
-  ];
-  for (const badOffer of badOffers) {
+  test(`When password and passwordRepeated are not equal, code is 400`, async () => {
+    const badUserData = {...validUserData, passwordRepeated: `not sidorov`};
     await request(app)
-      .post(`/articles`)
-      .send(badOffer)
+      .post(`/user`)
+      .send(badUserData)
       .expect(HttpCode.BAD_REQUEST);
-  }
+  });
+
+  test(`When email is already in use status code is 400`, async () => {
+    const badUserData = {...validUserData, email: `ivanov@example.com`};
+    await request(app)
+      .post(`/user`)
+      .send(badUserData)
+      .expect(HttpCode.BAD_REQUEST);
+  });
 });

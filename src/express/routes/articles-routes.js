@@ -62,6 +62,7 @@ articlesRouter.post(`/edit/:id`, async (req, res, next) => {
         api.getCategories()
       ]);
       res.render(`edit-post`, {user: true, article, categories, validationMessages});
+      // eslint-disable-next-line no-shadow
     } catch (e) {
       next(e);
     }

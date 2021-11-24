@@ -4,12 +4,18 @@ const Joi = require(`joi`);
 const {HttpCode} = require(`../constants`);
 
 const ErrorCommentMessage = {
-  TEXT: `Комментарий содержит меньше 20 символов`
+  TEXT: `Комментарий содержит меньше 20 символов`,
+  USER_ID: `Некорректный идентификатор пользователя`,
+  REQUIRED_USER_ID: `Идентификатор пользователя обязателен`
 };
 
 const schema = Joi.object({
   text: Joi.string().min(20).required().messages({
     'string.min': ErrorCommentMessage.TEXT
+  }),
+  userId: Joi.number().integer().positive().required().messages({
+    'number.base': ErrorCommentMessage.USER_ID,
+    'any.required': ErrorCommentMessage.REQUIRED_USER_ID
   })
 });
 
