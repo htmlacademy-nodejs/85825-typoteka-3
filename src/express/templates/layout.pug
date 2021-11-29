@@ -34,6 +34,14 @@ mixin insertErrorMessage(messages)
       each message in messages
         .server-error-item= message
 
+mixin registerErrorMessage(messages)
+  if messages
+    .form__validation-error
+      p.form__error-message При регистрации произошли ошибки:
+      ul.form__errors
+        each message in messages
+          li.form__error= message
+
   ul.preview__pagination.pagination
       if start > 1
         li
