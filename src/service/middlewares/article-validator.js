@@ -42,6 +42,7 @@ const schema = Joi.object({
     'string.empty': ErrorOfferMessage.ANON_NULL,
   }),
   upload: Joi.string().allow(``),
+  _csrf: Joi.string(),
   createdDate: Joi.string().allow(``),
   userId: Joi.number().integer().positive().required().messages({
     'number.base': ErrorOfferMessage.USER_ID,

@@ -15,6 +15,7 @@ const ErrorRegisterMessage = {
 };
 
 const schema = Joi.object({
+  _csrf: Joi.string(),
   name: Joi.string().pattern(/[^0-9$&+,:;=?@#|'<>.^*()%!]+$/).required().messages({
     'string.pattern.base': ErrorRegisterMessage.NAME,
     'string.empty': ErrorRegisterMessage.REQUIRED_NAME
