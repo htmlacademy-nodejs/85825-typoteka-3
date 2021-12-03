@@ -13,6 +13,7 @@ const schema = Joi.object({
   text: Joi.string().min(20).required().messages({
     'string.min': ErrorCommentMessage.TEXT
   }),
+  _csrf: Joi.string(),
   userId: Joi.number().integer().positive().required().messages({
     'number.base': ErrorCommentMessage.USER_ID,
     'any.required': ErrorCommentMessage.REQUIRED_USER_ID

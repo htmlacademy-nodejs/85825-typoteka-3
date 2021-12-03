@@ -62,6 +62,20 @@ class API {
       data
     });
   }
+
+  createComment(id, data) {
+    return this._load(`/articles/${id}/comments`, {
+      method: `POST`,
+      data
+    });
+  }
+
+  auth(email, password) {
+    return this._load(`/user/auth`, {
+      method: `POST`,
+      data: {email, password}
+    });
+  }
 }
 
 const defaultAPI = new API(defaultURL, TIMEOUT);
