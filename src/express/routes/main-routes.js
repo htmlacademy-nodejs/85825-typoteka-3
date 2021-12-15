@@ -21,14 +21,17 @@ mainRouter.get(`/`, async (req, res) => {
   const offset = (page - 1) * OFFERS_PER_PAGE;
   const [
     {count, articles},
-    categories
+    categories,
+    popularArticles,
+    lastComments
   ] = await Promise.all([
     api.getArticles({limit, offset}),
-    api.getCategories(true)
+    api.getCategories(true),
+    api.getPopularArticles(),
+    api.getLastComments()
   ]);
   const totalPages = Math.ceil(count / OFFERS_PER_PAGE);
-
-  res.render(`main`, {articles, page, totalPages, categories, user});
+  res.render(`main`, {articles, page, totalPages, categories, user, popularArticles, lastComments});
 });
 mainRouter.post(`/register`, upload.single(`avatar`), csrfProtection, async (req, res) => {
   const {body, file} = req;
@@ -91,6 +94,38 @@ mainRouter.get(`/categories`, auth, async (req, res) => {
   const {user} = req.session;
   const categories = await api.getCategories();
   res.render(`all-categories`, {categories, user});
+});
+
+mainRouter.post(`/categories`, auth, async (req, res) => {
+  const {'add-category': nameCategory} = req.body;
+  try {
+    await api.addCategory(nameCategory);
+    res.redirect(`/categories`);
+  } catch (errors) {
+    const {user} = req.session;
+    const categories = await api.getCategories();
+    const validationMessages = prepareErrors(errors);
+    res.render(`all-categories`, {categories, user, validationMessages});
+  }
+});
+
+mainRouter.post(`/categories/:id`, auth, async (req, res) => {
+  const {action, category} = req.body;
+  const {id} = req.params;
+  try {
+    if (action === `edit`) {
+      await api.editCategory(category, id);
+    } else {
+      await api.deleteCategory(id);
+    }
+
+    res.redirect(`/categories`);
+  } catch (errors) {
+    const {user} = req.session;
+    const categories = await api.getCategories();
+    const validationMessages = prepareErrors(errors);
+    res.render(`all-categories`, {categories, user, validationMessages});
+  }
 });
 
 module.exports = mainRouter;

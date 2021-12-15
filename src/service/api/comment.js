@@ -16,16 +16,20 @@ module.exports = (app, articleService, commentService) => {
   route.get(`/:articleId/comments`, articleExist(articleService), async (req, res) => {
     const {article} = res.locals;
     const comments = await commentService.findAll(article);
-
     res.status(HttpCode.OK)
       .json(comments);
 
   });
 
-  route.delete(`/:articleId/comments/:commentId`, [articleExist(articleService), RouteParamsValidator], async (req, res) => {
-    const {article} = res.locals;
+  route.get(`/comments/last`, async (req, res) => {
+    const comments = await commentService.lastComment();
+    res.status(HttpCode.OK)
+      .json(comments);
+  });
+
+  route.delete(`/comments/:commentId`, RouteParamsValidator, async (req, res) => {
     const {commentId} = req.params;
-    const deletedComment = await commentService.drop(article, commentId);
+    const deletedComment = await commentService.drop(commentId);
 
     if (!deletedComment) {
       logger.error(`Not found`);

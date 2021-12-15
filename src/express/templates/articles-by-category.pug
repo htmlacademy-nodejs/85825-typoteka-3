@@ -14,7 +14,7 @@ block content
     section.articles-category__list.preview
       h2.visually-hidden Список превью статей
       ul.preview__list
-        each article in category.articles
+        each article in articles
           li.preview__item(class=article.image ? '' : 'preview__item--noimage')
             ul.preview__breadcrumbs
               each cat in article.categories.slice(0, 4)
@@ -31,3 +31,5 @@ block content
               | Комментарии
               span.preview__cloud
               b.preview__comment-count #{article.comments.length}
+    .preview__toggle-wrapper
+      +pagination(page, totalPages, 2, `?`)

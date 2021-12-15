@@ -17,6 +17,17 @@ mixin pagination(page, totalPages, width, prefix)
     }
     let i = start - 1
 
+  ul.preview__pagination.pagination
+    if start > 1
+      li.pagination__item
+        a(href = `${prefix}page=${page - 1}`) Назад
+    while i++ < end
+      li.pagination__item(class = {'pagination__item--active': i === page})
+        a(href = `${prefix}page=${i}`)= i
+    if end < totalPages
+      li.pagination__item
+        a(href = `${prefix}page=${page + 1}`) Вперёд
+
 style.
   .server-error-wrap {
     color: white;

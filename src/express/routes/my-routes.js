@@ -27,4 +27,24 @@ myRouter.get(`/comments`, auth, async (req, res, next) => {
   res.render(`comments`, {articles, user});
 });
 
+myRouter.post(`/:id`, auth, async (req, res, next) => {
+  const {id} = req.params;
+  try {
+    await api.removeArticle(id);
+  } catch (e) {
+    next(e);
+  }
+  res.redirect(`/my`);
+});
+
+myRouter.post(`/comments/:id`, auth, async (req, res, next) => {
+  const {id} = req.params;
+  try {
+    await api.removeComments(id);
+  } catch (e) {
+    next(e);
+  }
+  res.redirect(`/my/comments`);
+});
+
 module.exports = myRouter;

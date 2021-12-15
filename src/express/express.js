@@ -27,6 +27,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static(path.resolve(__dirname, PUBLIC_DIR)));
 app.use(express.static(`./src/upload`));
+app.use(express.static(`./src/express/upload`));
 
 const mySessionStore = new SequelizeStore({
   db: sequelize,
