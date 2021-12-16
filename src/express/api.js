@@ -28,6 +28,10 @@ class API {
     return this._load(`/articles`, {params: {offset, limit, comments}});
   }
 
+  getArticlesByCategory({id, limit, offset}) {
+    return this._load(`/articles/category/${id}`, {params: {limit, offset}});
+  }
+
   getArticle(id, comments) {
     return this._load(`/articles/${id}`, {params: {comments}});
   }
@@ -42,6 +46,26 @@ class API {
 
   getCategory(id) {
     return this._load(`/categories/${id}`);
+  }
+
+  addCategory(data) {
+    return this._load(`/categories/`, {
+      method: `POST`,
+      data: {data}
+    });
+  }
+
+  editCategory(data, id) {
+    return this._load(`/categories/${id}`, {
+      method: `PUT`,
+      data: {data}
+    });
+  }
+
+  deleteCategory(id) {
+    return this._load(`/categories/${id}`, {
+      method: `DELETE`
+    });
   }
 
   createArticle(data) {
@@ -74,6 +98,26 @@ class API {
     return this._load(`/user/auth`, {
       method: `POST`,
       data: {email, password}
+    });
+  }
+
+  getPopularArticles() {
+    return this._load(`/articles/popular`);
+  }
+
+  getLastComments() {
+    return this._load(`/articles/comments/last`);
+  }
+
+  removeArticle(id) {
+    return this._load(`/articles/${id}`, {
+      method: `DELETE`,
+    });
+  }
+
+  removeComments(id) {
+    return this._load(`/articles/comments/${id}`, {
+      method: `DELETE`,
     });
   }
 }
