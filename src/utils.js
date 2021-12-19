@@ -5,13 +5,13 @@ const chalk = require(`chalk`);
 const {TEXT_FILE_PATH} = require(`./service/cli/constants`);
 const {ExitCode} = require(`./service/constants`);
 
-module.exports.getRandomInt = (min, max) => {
+const getRandomInt = (min, max) => {
   min = Math.ceil(min);
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
-module.exports.shuffle = (someArray) => {
+const shuffle = (someArray) => {
   for (let i = someArray.length - 1; i > 0; i--) {
     const randomPosition = Math.floor(Math.random() * i);
     [someArray[i], someArray[randomPosition]] = [someArray[randomPosition], someArray[i]];
@@ -20,16 +20,23 @@ module.exports.shuffle = (someArray) => {
   return someArray;
 };
 
-module.exports.getTextArr = async (filename) => {
+const getTextArr = async (filename) => {
   try {
     const dataText = await fs.readFile(path.join(__dirname, `..`, TEXT_FILE_PATH, filename), `utf8`);
     return dataText ? dataText.split(`\n`) : [];
   } catch (e) {
     console.error(chalk.red(`Ошибка чтения файла ${filename}`));
-    return process.exit(ExitCode.uncaughtFatalException);
+    return process.exit(ExitCode.UncaughtFatalException);
   }
 };
 
-module.exports.prepareErrors = (errors) => {
+const prepareErrors = (errors) => {
   return errors.response.data.split(`\n`);
+};
+
+module.exports = {
+  getRandomInt,
+  shuffle,
+  getTextArr,
+  prepareErrors
 };

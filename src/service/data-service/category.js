@@ -24,9 +24,8 @@ class CategoryService {
         }]
       });
       return result.map((it) => it.get());
-    } else {
-      return this._Category.findAll({raw: true});
     }
+    return this._Category.findAll({raw: true});
   }
 
   async findOne(id, isCount) {
@@ -53,9 +52,8 @@ class CategoryService {
         raw: true,
       });
       return result;
-    } else {
-      return this._Category.findByPk(id);
     }
+    return this._Category.findByPk(id);
   }
 
   async create(name) {

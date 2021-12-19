@@ -120,12 +120,12 @@ module.exports = {
 
     if (countOffer < 0) {
       logger.error(chalk.blue(`Указано отрицательное число`));
-      process.exit(ExitCode.uncaughtFatalException);
+      process.exit(ExitCode.UncaughtFatalException);
     }
 
     if (countOffer > MAX_COUNT) {
       logger.error(chalk.blue(`Не больше 1000 объявлений`));
-      process.exit(ExitCode.uncaughtFatalException);
+      process.exit(ExitCode.UncaughtFatalException);
     }
     const offers = await generateOffers(countOffer, categories);
     const usersData = await users();

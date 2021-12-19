@@ -1,15 +1,16 @@
 'use strict';
 
 const {Router} = require(`express`);
-const articlesRouter = new Router();
 const {getAPI} = require(`../api`);
 const {prepareErrors} = require(`../../utils`);
-const api = getAPI();
 const auth = require(`../middlewares/auth`);
 const upload = require(`../middlewares/upload`);
 const csrf = require(`csurf`);
+
 const csrfProtection = csrf();
 const OFFERS_PER_PAGE = 8;
+const articlesRouter = new Router();
+const api = getAPI();
 
 articlesRouter.get(`/category/:id`, async (req, res) => {
   let {page = 1} = req.query;
