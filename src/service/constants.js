@@ -7,9 +7,9 @@ const MAX_ID_LENGTH = 6;
 const API_PREFIX = `/api`;
 
 const ExitCode = {
-  success: 0,
-  uncaughtFatalException: 1,
-  invalidArgument: 9,
+  Success: 0,
+  UncaughtFatalException: 1,
+  InvalidArgument: 9,
 };
 
 const HttpCode = {

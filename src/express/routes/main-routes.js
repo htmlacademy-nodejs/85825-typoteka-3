@@ -1,15 +1,16 @@
 'use strict';
 
 const {Router} = require(`express`);
-const mainRouter = new Router();
 const {prepareErrors} = require(`../../utils`);
 const {getAPI} = require(`../api`);
 const upload = require(`../middlewares/upload`);
-const api = getAPI();
 const auth = require(`../middlewares/auth`);
 const csrf = require(`csurf`);
+
 const csrfProtection = csrf();
 const OFFERS_PER_PAGE = 8;
+const mainRouter = new Router();
+const api = getAPI();
 
 mainRouter.get(`/`, async (req, res) => {
   let {page = 1} = req.query;
