@@ -13,6 +13,7 @@ block content
         each article in articles
           li.notes__list-item
             time.notes__item-time(datetime=article.createdAt) #{formatDate(article.createdAt)}
-            a.notes__item-text(href='/articles/' + article.id) #{article.title}
-            button.notes__button.button.button--close-item(type='button')
-              span.visually-hidden Закрыть строку списка
+            a.notes__item-text(href='/articles/edit/' + article.id) #{article.title}
+            form(action=`my/${article.id}` method='POST')
+              button.notes__button.button.button--close-item(type='submit')
+                span.visually-hidden Закрыть строку списка

@@ -23,6 +23,31 @@ module.exports = (app, articleService) => {
     res.status(HttpCode.OK).json(result);
   });
 
+  route.get(`/popular`, async (req, res) => {
+    const popularArticles = await articleService.popularArticles();
+    if (!popularArticles) {
+      logger.error(`Not found popular articles`);
+      return res.status(HttpCode.NOT_FOUND)
+        .send(`Not found popular articles`);
+    }
+
+    return res.status(HttpCode.OK)
+      .json(popularArticles);
+  });
+
+  route.get(`/category/:id`, async (req, res) => {
+    const {id} = req.params;
+    const {limit, offset} = req.query;
+
+    const {count, articles} = await articleService.findArticlesByCategory(id, limit, offset);
+
+    res.status(HttpCode.OK)
+      .json({
+        count,
+        articles
+      });
+  });
+
   route.get(`/:articleId`, RouteParamsValidator, async (req, res) => {
     const {articleId} = req.params;
     const {comments} = req.query;

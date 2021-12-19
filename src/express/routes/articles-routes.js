@@ -1,20 +1,34 @@
 'use strict';
 
 const {Router} = require(`express`);
-const articlesRouter = new Router();
 const {getAPI} = require(`../api`);
 const {prepareErrors} = require(`../../utils`);
-const api = getAPI();
 const auth = require(`../middlewares/auth`);
+const upload = require(`../middlewares/upload`);
 const csrf = require(`csurf`);
+
 const csrfProtection = csrf();
+const OFFERS_PER_PAGE = 8;
+const articlesRouter = new Router();
+const api = getAPI();
 
 articlesRouter.get(`/category/:id`, async (req, res) => {
+  let {page = 1} = req.query;
   const {user} = req.session;
   const {id} = req.params;
-  const category = await api.getCategory(id);
-  const categories = await api.getCategories(true);
-  res.render(`articles-by-category`, {category, categories, user});
+  page = +page;
+  const limit = OFFERS_PER_PAGE;
+
+  const offset = (page - 1) * OFFERS_PER_PAGE;
+
+  const [category, categories, {count, articles}] = await Promise.all([
+    api.getCategory(id),
+    api.getCategories(true),
+    api.getArticlesByCategory({id, limit, offset})
+  ]);
+
+  const totalPages = Math.ceil(count / OFFERS_PER_PAGE);
+  res.render(`articles-by-category`, {category, categories, user, page, totalPages, articles});
 });
 articlesRouter.get(`/add`, auth, csrfProtection, async (req, res, next) => {
   const {user} = req.session;
@@ -25,12 +39,13 @@ articlesRouter.get(`/add`, auth, csrfProtection, async (req, res, next) => {
     next(e);
   }
 });
-articlesRouter.post(`/add`, auth, csrfProtection, async (req, res, next) => {
+articlesRouter.post(`/add`, upload.single(`upload`), auth, csrfProtection, async (req, res, next) => {
   const {user} = req.session;
-  const {body} = req;
+  const {body, file} = req;
   try {
     const offerData = {
       ...body,
+      image: file ? file.filename : ``,
       categories: body.category,
       userId: user.id
     };
@@ -48,15 +63,16 @@ articlesRouter.post(`/add`, auth, csrfProtection, async (req, res, next) => {
   }
 });
 
-articlesRouter.post(`/edit/:id`, auth, csrfProtection, async (req, res, next) => {
+articlesRouter.post(`/edit/:id`, upload.single(`upload`), auth, csrfProtection, async (req, res, next) => {
   const {user} = req.session;
   const {id} = req.params;
-  const {body} = req;
+  const {body, file} = req;
   let article;
   let categories;
   try {
     const offerData = {
       ...body,
+      image: file ? file.filename : ``,
       categories: body.category,
       userId: user.id
     };

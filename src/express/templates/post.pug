@@ -23,6 +23,9 @@ block content
                     | #{category.name}
                     sup #{category.count}
                   button.themes__remove-btn(type='button') Удалить категорию
+          if article.image
+            .post__picture
+              img(src=`/img/${article.image}` alt=article.title)
           .post__text
             h3 #{article.announce}
             p #{article.fullText}
