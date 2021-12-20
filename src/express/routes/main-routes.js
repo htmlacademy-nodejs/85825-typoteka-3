@@ -7,11 +7,11 @@ const upload = require(`../middlewares/upload`);
 const auth = require(`../middlewares/auth`);
 const csrf = require(`csurf`);
 
+const OFFERS_PER_PAGE = 8;
+
 const csrfProtection = csrf();
 const mainRouter = new Router();
 const api = getAPI();
-
-const OFFERS_PER_PAGE = 8;
 
 mainRouter.get(`/`, async (req, res) => {
   let {page = 1} = req.query;
