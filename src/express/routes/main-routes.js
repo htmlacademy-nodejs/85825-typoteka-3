@@ -8,9 +8,10 @@ const auth = require(`../middlewares/auth`);
 const csrf = require(`csurf`);
 
 const csrfProtection = csrf();
-const OFFERS_PER_PAGE = 8;
 const mainRouter = new Router();
 const api = getAPI();
+
+const OFFERS_PER_PAGE = 8;
 
 mainRouter.get(`/`, async (req, res) => {
   let {page = 1} = req.query;

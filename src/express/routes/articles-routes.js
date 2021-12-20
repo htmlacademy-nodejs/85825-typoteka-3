@@ -8,9 +8,10 @@ const upload = require(`../middlewares/upload`);
 const csrf = require(`csurf`);
 
 const csrfProtection = csrf();
-const OFFERS_PER_PAGE = 8;
 const articlesRouter = new Router();
 const api = getAPI();
+
+const OFFERS_PER_PAGE = 8;
 
 articlesRouter.get(`/category/:id`, async (req, res) => {
   let {page = 1} = req.query;
