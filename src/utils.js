@@ -26,7 +26,7 @@ const getTextArr = async (filename) => {
     return dataText ? dataText.split(`\n`) : [];
   } catch (e) {
     console.error(chalk.red(`Ошибка чтения файла ${filename}`));
-    return process.exit(ExitCode.UncaughtFatalException);
+    return process.exit(ExitCode.UNCAUGHT_FATAL_EXCEPTION);
   }
 };
 
